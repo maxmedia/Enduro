@@ -11,6 +11,7 @@ const path = require('path')
 
 // * enduro dependencies
 const flat = require(enduro.enduro_path + '/libs/flat_db/flat')
+const rerouting = require('./rerouting')
 
 // Renders individual files
 page_queue_generator.prototype.generate_pagelist = function () {
@@ -67,6 +68,7 @@ page_queue_generator.prototype.generate_pagelist = function () {
 				}
 
 				return Promise.all(generators)
+					.then(rerouting.reroute_paths(pages_to_render))
 					.then(() => {
 						resolve(pages_to_render)
 					})
