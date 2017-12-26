@@ -5,73 +5,67 @@
 const page_queue_generator = function () {}
 
 // * vendor dependencies
-const Promise = require('bluebird')
 const glob = require('glob-promise')
 const path = require('path')
 
 // * enduro dependencies
 const flat = require(enduro.enduro_path + '/libs/flat_db/flat')
+const rerouting = require('./rerouting')
 
 // Renders individual files
 page_queue_generator.prototype.generate_pagelist = function () {
 
 	const self = this
 
-	return new Promise(function (resolve, reject) {
+	// Reads the culture config file and gets cultures and sets them to the global enduro.config.cultures variable
+	return self.get_all_pages().then((files) => {
 
-		// Reads the culture config file and gets cultures and sets them to the global enduro.config.cultures variable
-		self.get_all_pages()
-			.then((files) => {
+		let all_pages_to_render = []
+		let pages_to_render = []
 
-				let all_pages_to_render = []
-				let pages_to_render = []
+		// iterates over files and fill all_pages_to_render list
+		for (f in files) {
+			for (c in enduro.config.cultures) {
 
-				// iterates over files and fill all_pages_to_render list
-				for (f in files) {
-					for (c in enduro.config.cultures) {
+				let page_to_render = {}
 
-						let page_to_render = {}
+				// absolute path to page template file
+				page_to_render.file = files[f]
 
-						// absolute path to page template file
-						page_to_render.file = files[f]
+				// relative, 'flat' path to cms file
+				page_to_render.context_file = self.get_page_url_from_full_path(files[f])
 
-						// relative, 'flat' path to cms file
-						page_to_render.context_file = self.get_page_url_from_full_path(files[f])
+				// culture string
+				page_to_render.culture = enduro.config.cultures[c]
 
-						// culture string
-						page_to_render.culture = enduro.config.cultures[c]
-
-						// destination path
-						if (page_to_render.context_file.endsWith('index')) {
-							page_to_render.destination_path = page_to_render.context_file;
-						} else {
-							page_to_render.destination_path = page_to_render.context_file + '/index';
-						}
-
-						// true if page is generator
-						page_to_render.generator = flat.is_generator(page_to_render.context_file)
-
-						// push to pages to render list
-						all_pages_to_render.push(page_to_render)
-					}
+				// destination path
+				if (page_to_render.context_file.endsWith('index')) {
+					page_to_render.destination_path = page_to_render.context_file
+				} else {
+					page_to_render.destination_path = page_to_render.context_file + '/index'
 				}
 
-				let generators = []
+				// true if page is generator
+				page_to_render.generator = flat.is_generator(page_to_render.context_file)
 
-				for (i in all_pages_to_render) {
-					if (all_pages_to_render[i].generator) {
-						generators.push(self.add_generator_pages(pages_to_render, all_pages_to_render[i]))
-					} else {
-						pages_to_render.push(all_pages_to_render[i])
-					}
-				}
+				// push to pages to render list
+				all_pages_to_render.push(page_to_render)
+			}
+		}
 
-				return Promise.all(generators)
-					.then(() => {
-						resolve(pages_to_render)
-					})
+		let generators = []
 
-			})
+		for (i in all_pages_to_render) {
+			if (all_pages_to_render[i].generator) {
+				generators.push(self.add_generator_pages(pages_to_render, all_pages_to_render[i]))
+			} else {
+				pages_to_render.push(all_pages_to_render[i])
+			}
+		}
+
+		return Promise.all(generators).then(() => {
+			return rerouting.reroute_paths(pages_to_render)
+		})
 	})
 }
 
