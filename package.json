@@ -1,6 +1,6 @@
 {
   "name": "enduro",
-  "version": "1.4.43",
+  "version": "1.4.45",
   "description": "Minimalistic, lean & mean static page generator / cms",
   "main": "index.js",
   "author": {
@@ -38,7 +38,7 @@
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.4",
     "dir-compare": "^1.0.1",
-    "enduro_admin": "^1.0.73",
+    "enduro_admin": "github:maxmedia/enduro_admin#v1.0.73.mxm",
     "express": "^4.16.2",
     "express-session": "^1.15.6",
     "extend": "^3.0.0",
