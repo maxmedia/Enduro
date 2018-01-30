@@ -70,54 +70,49 @@ pagelist_generator.prototype.generate_cms_list = function () {
 
 			// helper function to build the pagelist
 			function build (pagepath, partial_pages, fullpath) {
+				var item = {
+					fullpath: '/' + fullpath.join('/'),
+					name: format_service.prettify_string(pagepath[0]),
+					slug: pagepath[0].toString()
+				}
 
-				// decides if pagepath is folder or file
-				if (pagepath.length == 1) {
-
-					let page = {}
-					page.page = true
-					page.fullpath = '/' + fullpath.join('/')
-					page.name = format_service.prettify_string(pagepath[0])
-					page.page_slug = pagepath[0].toString()
-
+				if (pagepath.length == 1) { // pagepath is file
+					item.page = true
+					item.page_slug = item.slug
 
 					// mark generator template as hidden
 					if (fullpath[0] == 'generators' && fullpath.length >= 2 && fullpath[fullpath.length - 2] == fullpath[fullpath.length - 1]) {
-						page.hidden = true
+						item.hidden = true
 					}
 
-					partial_pages[pagepath[0]] = page
-					flat_pagelist.push(page)
-				} else {
+					if (partial_pages[item.slug]) { // item is both page and folder
+						Object.assign(item, partial_pages[item.slug])
+					}
 
+					partial_pages[item.slug] = item
+					flat_pagelist.push(item)
+				} else { // else pagepath is folder
 					// remove templates from pagelist
-					if (pagepath[0] == 'templates') {
-						return
-					}
+					if (pagepath[0] == 'templates') return
 
-					let folder = {}
-					folder.folder = true
-					folder.fullpath = '/' + fullpath.join('/')
-					folder.name = format_service.prettify_string(pagepath[0])
-					folder.folder_slug = pagepath[0].toString()
+					item.folder = true
+					item.folder_slug = item.slug
 
 					if (fullpath[0] == 'generators' && pagepath.length != fullpath.length) {
-						folder.generator = true
+						item.generator = true
 					}
 
 					// global and generators receive special treatment and the subfolders are not created
-					if (folder.name.toLowerCase() == 'global' || folder.name.toLowerCase() == 'generators') {
-						build(pagepath.slice(1), partial_pages, fullpath)
-					} else {
-
-						// adds the folder to the tree if it's not there yet
-						if (!(pagepath[0] in partial_pages)) {
-							partial_pages[pagepath[0]] = folder
-						}
-
-						build(pagepath.slice(1), partial_pages[pagepath[0]], fullpath)
+					if (item.name.toLowerCase() == 'global' || item.name.toLowerCase() == 'generators') {
+						return build(pagepath.slice(1), partial_pages, fullpath)
 					}
 
+					if (partial_pages[item.slug]) { // item is both page and folder
+						Object.assign(item, partial_pages[item.slug])
+					}
+
+					partial_pages[item.slug] = item
+					build(pagepath.slice(1), partial_pages[item.slug], fullpath)
 				}
 			}
 
