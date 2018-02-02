@@ -91,6 +91,7 @@ function get_rerouter () {
 		}
 	})
 }
+exports.get_rerouter = get_rerouter
 
 /**
  * Creates Promises to reroute each item in `pages_to_render`.
