@@ -48,10 +48,8 @@ page_queue_generator.prototype.generate_pagelist = function () {
 				// true if page is generator
 				page_to_render.generator = flat.is_generator(page_to_render.context_file)
 
-				if (!page_to_render.generator) {
-					// push to pages to render list
-					all_pages_to_render.push(page_to_render)
-				}
+				// push to pages to render list
+				all_pages_to_render.push(page_to_render)
 			}
 		}
 
