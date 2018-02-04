@@ -73,12 +73,23 @@ const path = require('path')
  */
 
 /**
+ * Default rerouter (i.e. doesn't reroute any paths)
+ * @param {string} destinationPath original destination path
+ * @return {Promise<string>} new `destinationPath` or falsey
+ */
+const DEFAULT_REROUTER = (destinationPath) => {
+	return new Promise(resolve => resolve())
+}
+
+/**
  * Loads and sets-up the rerouter
  * @returns {rerouterPromise|false} rerouter function or false if rerouter is not defined
  */
 function get_rerouter () {
 	return new Promise((resolve, reject) => {
-		if (!fs.existsSync(path.join(enduro.project_path, 'rerouter.js'))) return resolve(false)
+		if (!fs.existsSync(path.join(enduro.project_path, 'rerouter.js'))) {
+			return resolve(DEFAULT_REROUTER)
+		}
 
 		try {
 			let makeRerouter = require(path.join(enduro.project_path, 'rerouter.js'))
