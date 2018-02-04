@@ -74,7 +74,6 @@ const path = require('path')
 
 /**
  * Loads and sets-up the rerouter
- * @private
  * @returns {rerouterPromise|false} rerouter function or false if rerouter is not defined
  */
 function get_rerouter () {
@@ -91,6 +90,7 @@ function get_rerouter () {
 		}
 	})
 }
+exports.get_rerouter = get_rerouter
 
 /**
  * Creates Promises to reroute each item in `pages_to_render`.
