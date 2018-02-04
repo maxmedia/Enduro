@@ -62,16 +62,21 @@ page_queue_generator.prototype.get_generated_pages = function (page_context) {
 	let pages_glob = path.join(enduro.project_path, 'cms', page_context.context_file, '**/*.js')
 
 	return glob(pages_glob).then((files) => {
-		// map found context files
-		return files.map((file) => {
-			let context_file = flat.get_cms_filename_from_fullpath(file)
+		// remove generator template file
+		const template_filename = page_context.context_file.replace(/(\/.+)$/, '$1$1.js')
 
-			// update clone of generator object
-			return Object.assign({}, page_context, {
-				context_file: context_file, // relative, 'flat' path to cms file
-				destination_path: flat.filepath_from_filename(context_file),
+		// map found context files
+		return files
+			.filter(file => !file.endsWith(template_filename))
+			.map((file) => {
+				let context_file = flat.get_cms_filename_from_fullpath(file)
+
+				// update clone of generator object
+				return Object.assign({}, page_context, {
+					context_file: context_file, // relative, 'flat' path to cms file
+					destination_path: flat.filepath_from_filename(context_file),
+				})
 			})
-		})
 	})
 }
 
