@@ -111,7 +111,7 @@ exports.get_rerouter = get_rerouter
  * @returns {Promise[]}
  */
 function reroute_paths_promises (rerouter, pages_to_render) {
-	return pages_to_render.map((page_to_render, i) => {
+	return pages_to_render.map((page_to_render) => {
 		return rerouter(page_to_render.destination_path).then((destination_path) => {
 			if (destination_path) {
 				page_to_render.destination_path = destination_path
