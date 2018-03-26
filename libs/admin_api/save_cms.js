@@ -33,7 +33,11 @@ module.exports = function save_cms (req, res, next) {
 
 	return flat.save(filename, content)
 		.then((new_context) => {
-			return enduro.actions.render(true).then(() => res.send(new_context))
+			res.send(new_context)
+			enduro.actions.render(true, 'patient_lock')
+			return
+			//TODO hard save option
+			// return enduro.actions.render(true).then(() => res.send(new_context))
 		}, (err) => {
 			if (err && err.message === 'last_edit mismatch') {
 				return res.status(422).json({ success: false, message: err.message })
