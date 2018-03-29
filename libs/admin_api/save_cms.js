@@ -9,6 +9,7 @@
 
 // * enduro dependencies
 const flat = require('../flat_db/flat')
+const abstractor = require('../abstractor/abstractor')
 const logger = require('../logger')
 const admin_rights = require('../admin_utilities/admin_rights')
 
@@ -31,7 +32,10 @@ module.exports = function save_cms (req, res, next) {
 	// disable watching for cms files to prevent double rendering
 	enduro.flags.temporary_nocmswatch = true
 
-	return flat.save(filename, content)
+	return abstractor.abstract_context(content)
+		.then((context) => {
+			return flat.save(filename, context)
+		})
 		.then((new_context) => {
 			res.send(new_context)
 			enduro.actions.render(true, 'patient_lock')
