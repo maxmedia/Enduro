@@ -20,11 +20,16 @@ filesystem.prototype.init = function () {
 }
 
 // basically copies the file
-filesystem.prototype.upload = function (filename, path_to_file) {
+filesystem.prototype.upload = function (filename, path_to_file, metadata) {
 	return new Promise(function (resolve, reject) {
 		const destination_path = path.join(enduro.project_path, UPLOADS_FOLDER, filename)
 		const destination_src_path = path.join(enduro.project_path, enduro.config.build_folder, UPLOADS_FOLDER, filename)
 		const destination_url = '/' + UPLOADS_FOLDER + '/' + filename
+
+		if (metadata && Object.keys(metadata).length) {
+			console.warn('Metadata not supported for local filesystem: %s: %j',
+				filename, metadata)
+		}
 
 		flat_helpers.ensure_directory_existence(destination_path, destination_src_path)
 			.then(() => {

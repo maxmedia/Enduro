@@ -17,7 +17,7 @@ filesystem.prototype.init = function () {
 	// no init required
 }
 
-filesystem.prototype.upload = function (filename, path_to_file) {
+filesystem.prototype.upload = function (filename, path_to_file, metadata) {
 	const destination_url = this.get_remote_url(filename)
 
 	var s3 = new AWS.S3({
@@ -30,12 +30,22 @@ filesystem.prototype.upload = function (filename, path_to_file) {
 	})
 
 	return new Promise((resolve, reject) => {
-		s3.upload({
+		var params = {
 			Key: filename,
 			Body: fs.createReadStream(path_to_file),
 			ContentType: mime.contentType(path.extname(filename)),
 			CacheControl: 'public, max-age=31536000'
-		}, (err, data) => {
+		}
+
+		if (metadata) {
+			params.Metadata = metadata
+			if (metadata['image_magick']) {
+				params.CacheControl = 'private, no-cache, no-store, must-revalidate'
+				params.Metadata['image_magick_CacheControl'] = 'public, max-age=31536000'
+			}
+		}
+
+		s3.upload(params, (err, data) => {
 			if (err) {
 				console.error(`uploadiung failed ${filename} ${err.stack}`)
 				return reject(err)

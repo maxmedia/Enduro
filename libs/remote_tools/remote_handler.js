@@ -11,7 +11,7 @@ const request = require('request')
 const flat_helpers = require(enduro.enduro_path + '/libs/flat_db/flat_helpers')
 const fs = require('fs')
 
-remote_handler.prototype.upload_to_filesystem_by_file = function (file, timestamp) {
+remote_handler.prototype.upload_to_filesystem_by_file = function (file, timestamp, metadata) {
 	// disallow non-latin & ASCII control characters
 	if (/[^\x20-\x7e]/.test(file.name)) {
 		return Promise.reject(new Error(`Filename includes non-latin or control characters`))
@@ -20,7 +20,7 @@ remote_handler.prototype.upload_to_filesystem_by_file = function (file, timestam
 	// apply timestamp to file's name if it is requested by timestamp parameter
 	let filename = timestamp ? timestamp_filename(file.name) : file.name
 
-	return enduro.filesystem.upload('direct_uploads/' + filename, file.path)
+	return enduro.filesystem.upload('direct_uploads/' + filename, file.path, metadata)
 }
 
 remote_handler.prototype.upload_to_filesystem_by_filepath = function (filename, path_to_file) {

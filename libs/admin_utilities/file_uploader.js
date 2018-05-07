@@ -13,8 +13,8 @@ const http = require('http')
 const flat_helpers = require(enduro.enduro_path + '/libs/flat_db/flat_helpers')
 const remote_handler = require(enduro.enduro_path + '/libs/remote_tools/remote_handler')
 
-file_uploader.prototype.upload = function (file) {
-	return remote_handler.upload_to_filesystem_by_file(file, true)
+file_uploader.prototype.upload = function (file, metadata) {
+	return remote_handler.upload_to_filesystem_by_file(file, true, metadata)
 }
 
 file_uploader.prototype.upload_by_url = function (file_url) {

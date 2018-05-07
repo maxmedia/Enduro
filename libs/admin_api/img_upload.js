@@ -43,7 +43,7 @@ module.exports = [
 		file_uploader.upload({
 			name: req.file.originalname,
 			path: req.file.path
-		}).then((image_url) => {
+		}, req.query).then((image_url) => {
 			res.send({ success: true, image_url: image_url })
 		}, (err) => {
 			if (!err) err = new Error('undefined error in rejection')
