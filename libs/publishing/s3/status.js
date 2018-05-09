@@ -55,7 +55,7 @@ function list_remote (s3) {
 				if (err) return reject(err)
 
 				for (let c of data.Contents) {
-					if (/^(\.|direct_uploads\/|juicebox\/)/.test(c.Key)) continue
+					if (/^(\.|(direct_uploads(_[^\/]+)?\/)|juicebox\/)/.test(c.Key)) continue
 					result.set(c.Key, c)
 				}
 
